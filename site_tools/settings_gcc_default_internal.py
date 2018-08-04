@@ -53,6 +53,9 @@ def generate(env, **kw):
         env['AR'] = prefix + 'gcc-ar' + suffix
         env['NM'] = prefix + 'gcc-nm' + suffix
         env['RANLIB'] = prefix + 'gcc-ranlib' + suffix
+        if sys.platform == "darwin":
+            env['AR'] = prefix + 'ar'
+            env['RANLIB'] = prefix + 'ranlib'
 
     env['OBJCOPY'] = prefix + 'objcopy'
     env['OBJDUMP'] = prefix + 'objdump'
