@@ -61,12 +61,21 @@ def size_action(target, source, env):
     with open(source[0].path, "rb") as src:
         elffile = ELFFile(src)
         for section in elffile.iter_sections():
-            s = {
-                "name": section.name.decode('ASCII'),
-                "vaddr": section["sh_addr"],
-                "paddr": section["sh_addr"],
-                "size": section["sh_size"],
-            }
+            #if using python 3 there is no need for .decode
+            if (sys.version_info[0] == 3):
+                s = {
+                    "name":  section.name,
+                    "vaddr": section["sh_addr"],
+                    "paddr": section["sh_addr"],
+                    "size": section["sh_size"],
+                }
+            else:
+                s = {
+                    "name":  section.name.decode('ASCII'),
+                    "vaddr": section["sh_addr"],
+                    "paddr": section["sh_addr"],
+                    "size": section["sh_size"],
+                }
             if s["vaddr"] == 0 or s["size"] == 0: continue;
             for segment in elffile.iter_segments():
                 if (segment["p_vaddr"] == s["vaddr"] and segment["p_filesz"] == s["size"]):
