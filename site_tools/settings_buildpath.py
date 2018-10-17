@@ -11,7 +11,25 @@
 # - 2013-2014, 2016-2017, Fabian Greif (DLR RY-AVS)
 
 import os
+import sys
 
+is_py_3 = (sys.version_info[0] == 3)
+
+def makedirs(path):
+    if is_py_3:
+        os.makedirs(path, exist_ok=True)
+    else:
+        while(True):
+            try:
+                os.makedirs(path)
+                break
+            except OSError as exc:
+                if os.path.isdir(path):
+                    break
+                if exc.errno == errno.EEXIST:
+                    pass
+                else:
+                    raise
 
 def relocate_to_buildpath(env, path, strip_extension=False):
     """ Relocate path from source directory to build directory
@@ -29,9 +47,14 @@ def relocate_to_buildpath(env, path, strip_extension=False):
             while path.startswith('..'):
                 path = path[3:]
 
-        return os.path.abspath(os.path.join(env['BUILDPATH'], path))
+        buildpath = os.path.abspath(os.path.join(env['BUILDPATH'], path))
     else:
-        return os.path.abspath(path)
+        buildpath = os.path.abspath(path)
+
+    # We make the dirs manually, so that multiple processes building
+    # in the same path are not racing to create the first directory
+    makedirs(os.path.dirname(buildpath))
+    return buildpath
 
 
 def generate(env, **kw):
