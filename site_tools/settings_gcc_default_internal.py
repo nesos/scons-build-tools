@@ -43,19 +43,17 @@ def generate(env, **kw):
     prefix = path + prefix
     env['CC'] = prefix + 'gcc' + suffix
     env['CXX'] = prefix + 'g++' + suffix
+    env['AR'] = prefix + 'ar'
+    env['RANLIB'] = prefix + 'ranlib'
     if suffix == '':
         env['AS'] = prefix + 'as'
-        env['AR'] = prefix + 'ar'
         env['NM'] = prefix + 'nm'
-        env['RANLIB'] = prefix + 'ranlib'
     else:
         env['AS'] = prefix + 'gcc' + suffix
-        env['AR'] = prefix + 'gcc-ar' + suffix
         env['NM'] = prefix + 'gcc-nm' + suffix
-        env['RANLIB'] = prefix + 'gcc-ranlib' + suffix
-        if sys.platform == "darwin":
-            env['AR'] = prefix + 'ar'
-            env['RANLIB'] = prefix + 'ranlib'
+        if sys.platform != "darwin":
+            env['AR'] = prefix + 'gcc-ar' + suffix
+            env['RANLIB'] = prefix + 'gcc-ranlib' + suffix
 
     env['OBJCOPY'] = prefix + 'objcopy'
     env['OBJDUMP'] = prefix + 'objdump'
