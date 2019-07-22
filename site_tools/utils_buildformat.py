@@ -79,6 +79,7 @@ def generate(env, **kw):
         env['HEXCOMSTR'] =      '%sIntel-Hex File· %s$TARGET%s' % default
         env['BINCOMSTR'] =      '%sBinary File···· %s$TARGET%s' % default
         env['LSSCOMSTR'] =      '%sExt. Listing··· %s$TARGET%s' % default
+        env['SYMBOLSCOMSTR'] =  '%sSymbols········ %s$SOURCE%s' % default
 
 
 def exists(env):

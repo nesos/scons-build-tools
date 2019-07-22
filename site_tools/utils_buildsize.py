@@ -151,30 +151,8 @@ def show_size(env, source, alias='__size'):
     return env.AlwaysBuild(env.Alias(alias, source, action))
 
 
-def list_symbols(env, source, alias='__symbols'):
-    action = Action("$NM %s -S -C --size-sort -td" % source[0].path,
-                    cmdstr="$SYMBOLSCOMSTR")
-    return env.AlwaysBuild(env.Alias(alias, source, action))
-
-
-def run_program(env, program):
-    return env.Command('thisfileshouldnotexist', program, '@"%s"' % program[0].abspath)
-
-
-def phony_target(env, **kw):
-    for target, action in kw.items():
-        env.AlwaysBuild(env.Alias(target, [], action))
-
-
 def generate(env, **kw):
-    if ARGUMENTS.get('verbose') != '1':
-        env['SYMBOLSCOMSTR'] = "Show symbols for '$SOURCE':"
-
     env.AddMethod(show_size, 'Size')
-    env.AddMethod(list_symbols, 'Symbols')
-
-    env.AddMethod(run_program, 'Run')
-    env.AddMethod(phony_target, 'Phony')
 
 
 def exists(env):

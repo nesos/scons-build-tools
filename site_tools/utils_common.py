@@ -53,12 +53,6 @@ def filtered_glob(env, pattern, omit=None, ondisk=True, source=False, strings=Fa
     return results
 
 
-def list_symbols(env, source, alias='__symbols'):
-    action = Action("$NM %s -S -C --size-sort -td" % source[0].path,
-                    cmdstr="$SYMBOLSCOMSTR")
-    return env.AlwaysBuild(env.Alias(alias, source, action))
-
-
 def run_program(env, program):
     return env.Command('thisfileshouldnotexist',
                        program,
@@ -76,11 +70,6 @@ def generate(env, **kw):
 
     env.AddMethod(remove_from_list, 'RemoveFromList')
     env.AddMethod(filtered_glob, 'FilteredGlob')
-
-    if ARGUMENTS.get('verbose') != '1':
-        env['SYMBOLSCOMSTR'] = "Show symbols for '$SOURCE':"
-
-    env.AddMethod(list_symbols, 'Symbols')
 
     env.AddMethod(run_program, 'Run')
     env.AddMethod(phony_target, 'Phony')

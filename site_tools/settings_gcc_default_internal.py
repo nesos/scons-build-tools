@@ -22,6 +22,11 @@ def strip_binary(env, target, source, options="--strip-unneeded"):
                        Action("$STRIP %s -o %s %s" % (options, target, source[0]),
                               cmdstr="$STRIPCOMSTR"))
 
+def list_symbols(env, source, alias='__symbols'):
+    action = Action("$NM %s -S -C --size-sort -td" % source[0].path,
+                    cmdstr="$SYMBOLSCOMSTR")
+    return env.AlwaysBuild(env.Alias(alias, source, action))
+
 
 def generate(env, **kw):
     env.Tool('gcc')
@@ -181,6 +186,7 @@ def generate(env, **kw):
     })
 
     env.AddMethod(strip_binary, 'Strip')
+    env.AddMethod(list_symbols, 'Symbols')
 
 
 def exists(env):
