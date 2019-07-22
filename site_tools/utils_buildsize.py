@@ -61,21 +61,15 @@ def size_action(target, source, env):
     with open(source[0].path, "rb") as src:
         elffile = ELFFile(src)
         for section in elffile.iter_sections():
-            #if using python 3 there is no need for .decode
-            if (sys.version_info[0] == 3):
-                s = {
-                    "name":  section.name,
-                    "vaddr": section["sh_addr"],
-                    "paddr": section["sh_addr"],
-                    "size": section["sh_size"],
-                }
-            else:
-                s = {
-                    "name":  section.name.decode('ASCII'),
-                    "vaddr": section["sh_addr"],
-                    "paddr": section["sh_addr"],
-                    "size": section["sh_size"],
-                }
+            s = {
+                "name":  section.name,
+                "vaddr": section["sh_addr"],
+                "paddr": section["sh_addr"],
+                "size": section["sh_size"],
+            }
+            # if using python 2 there is a need for .decode
+            if (sys.version_info[0] == 2):
+                s["name"] = s["name"].decode('ASCII')
             if s["vaddr"] == 0 or s["size"] == 0: continue;
             for segment in elffile.iter_segments():
                 if (segment["p_vaddr"] == s["vaddr"] and segment["p_filesz"] == s["size"]):
@@ -146,6 +140,9 @@ Heap:  {heap_fmt:>11s} ({heap_p:2.1f}% available)
 def show_size(env, source, alias='__size'):
     if env.has_key('CONFIG_DEVICE_MEMORY'):
         action = Action(size_action, cmdstr="$SIZECOMSTR")
+    elif env.has_key('CONFIG_DEVICE_NAME'):
+        action = Action("$SIZE -C --mcu=$CONFIG_DEVICE_NAME %s" % source[0].path,
+                        cmdstr="$SIZECOMSTR")
     else:
         # use the raw output of the size tool
         action = Action("$SIZE %s" % source[0].path,
