@@ -17,10 +17,20 @@ import os.path
 
 from SCons.Script import *
 
+def _listify(obj):
+    if obj is None:
+        return list()
+    if isinstance(obj, SCons.Node.NodeList):
+        return obj
+    if isinstance(obj, (list, tuple, set)):
+        return list(obj)
+    if hasattr(obj, "__iter__") and not hasattr(obj, "__getitem__"):
+        return list(obj)
+    return [obj, ]
 
-def _listify(node):
-    return [node, ] if (not isinstance(node, list) and
-                        not isinstance(node, SCons.Node.NodeList)) else node
+
+def listify(env, *objs):
+    return [entry for obj in objs for entry in _listify(obj)]
 
 
 def remove_from_list(env, identifier, to_remove):
@@ -73,6 +83,8 @@ def generate(env, **kw):
 
     env.AddMethod(run_program, 'Run')
     env.AddMethod(phony_target, 'Phony')
+
+    env.AddMethod(listify, 'Listify')
 
 
 def exists(env):
